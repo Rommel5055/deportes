@@ -147,7 +147,7 @@ if(($email[1] == $CFG->deportes_emailextension) || is_siteadmin() || has_capabil
 		
 		$height = "24vh";
 		$calendarheight = 220;
-		$calendarwidth = 950;
+		$calendarwidth = 720;
 		
 		$today = date("m", time());
 		$todayday = date("j", time());
