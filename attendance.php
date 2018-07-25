@@ -353,13 +353,14 @@ if(($email[1] == $CFG->deportes_emailextension) || is_siteadmin() || has_capabil
 		
 		var options = {
 			title: "<?php echo get_string('attendance','local_deportes')?>",
-			width: '920',
+			width: '720',
 			height: "<?php echo $calendarheight; ?>",
 			colorAxis:{
 				minValue:-1,
 				maxValue:1
 			},
 			calendar: {
+				cellSize: 12,
 			      dayOfWeekRightSpace: 10,
 			      daysOfWeek: '<?php echo get_string('calendarchartweek', 'local_deportes');?>',
 			    }
