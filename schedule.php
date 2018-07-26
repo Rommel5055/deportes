@@ -67,6 +67,7 @@ if(($email[1] == $CFG->deportes_emailextension) || is_siteadmin() || has_capabil
 		$fs = get_file_storage();
 		// Obtiene archivo gracias al hash.
 		$file = $fs->get_file_by_hash($fitnessresult->pathnamehash);
+		var_dump($file->get_content());
 		$fitnessurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 		echo $fitnessurl;
 	}
