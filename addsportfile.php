@@ -82,9 +82,9 @@ if ($action == "addfile"){
 			$newfile->name = "fitness".$timecreated.".".$extension;
 			$newfile->type = 2;
 		}
-		//foreach ($files as $file){
-			//$upload[] = deportes_uploadschedule($file, $path, $newfile, $context, $timecreated, $userid);
-		//}
+		foreach ($files as $file){
+			$upload[] = deportes_uploadschedule($file, $path, $newfile, $context, $timecreated, $userid);
+		}
 		
 		$latest = $DB->get_record_sql("SELECT MAX(uploaddate) AS latest FROM {deportes_files}");
 		$lastid = $DB->get_record_sql("SELECT id FROM {deportes_files} WHERE uploaddate = ?", array('uploaddate' => $latest->latest));
