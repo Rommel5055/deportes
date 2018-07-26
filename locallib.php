@@ -272,3 +272,62 @@ function deportes_minimumpermonth($firstmonth, $lastmonth, $total, $monthlyatten
 	}
 	return $minimumpermonth; 
 }
+
+function deportes_setimageurl($imageid, $contextid){
+	$fs = get_file_storage();
+	
+	$files = $fs->get_area_files($contextid, 'local_deportes', 'file', $imageid);
+	//var_dump($files);
+	//var_dump($imageid);
+	if ($files = $fs->get_area_files($contextid, 'local_deportes', 'file', $imageid)) {
+		foreach ($files as $file) {
+			$fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+			//var_dump($fileurl);
+			$imageurl = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() . $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://' . $fileurl->get_host() . $fileurl->get_path();
+			//var_dump($imageurl);
+			return $imageurl;
+		}
+	}
+}
+
+function deportes_uploadschedule($file, $path, $newfile, $contextsystem, $timecreated, $userid){
+	global $DB, $OUTPUT, $USER;
+	$schedulefile = $path ."/schedule/".$newfile->name;
+	
+	var_dump($file);
+	var_dump($schedulefile);
+	
+	$originalfilename = $file->get_filename();
+	$file->copy_content_to($schedulefile);
+		$fs = get_file_storage();
+
+		$file_record = array(
+				'contextid' => $contextsystem->id,
+				'component' => 'local_deportes',
+				'filearea' => 'draft',
+				'itemid' => 0,
+				'filepath' => '/',
+				'filename' => $newfile->name,
+				'timecreated' => time(),
+				'timemodified' => time(),
+				'userid' => $USER->id,
+				'author' => $USER->firstname." ".$USER->lastname,
+				'license' => 'allrightsreserved'
+		);
+
+		// If the file already exists we delete it
+		if ($fs->file_exists($contextsystem->id, 'local_deportes', 'draft', 0, '/', $newfile->name)) {
+			$previousfile = $fs->get_file($contextsystem->id, 'local_deportes', 'draft', 0, '/', $newfile->name);
+			$previousfile->delete();
+		}
+
+		// Info for the new file
+		$fileinfo = $fs->create_file_from_pathname($file_record, $schedulefile);
+
+		$newfile->uploaddate = $timecreated;
+		$newfile->iduser = $userid;
+		$DB->insert_record('deportes_files', $newfile);
+
+		return $OUTPUT->notification(get_string("filename", "local_deportes").$originalfilename."<br>".get_string("uploadsuccessful", "local_paperattendance"), "notifysuccess");
+
+}

@@ -62,16 +62,22 @@ if(($email[1] == $CFG->deportes_emailextension) || is_siteadmin() || has_capabil
 	echo $OUTPUT->heading("DeportesUAI");
 	echo $OUTPUT->tabtree(deportes_tabs(), "schedule");
 	
-	/*
-	if($fitnessresult = $DB->get_record_sql("SELECT contenthash FROM {files} WHERE ".$DB->sql_like("filename", ":img"), array("img" => "fitness.%"))) {
-		$fitnessname = $fitnessresult->contenthash;
+	
+	if($fitnessresult = $DB->get_record_sql("SELECT pathnamehash, max(timecreated) FROM {files} WHERE filename LIKE ? and component = ?", array("%.pdf%", "user"))) {
+		$fs = get_file_storage();
+		// Obtiene archivo gracias al hash.
+		$file = $fs->get_file_by_hash($fitnessresult->pathnamehash);
+		$fitnessurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+		echo $fitnessurl;
+	}
+		/*$fitnessname = $fitnessresult->contenthash;
 		$path1 = substr($fitnessname, 0, 2);
 		$path2 = substr($fitnessname, 2, 2);
 		$fitnesspath = $path1."/".$path2."/".$fitnessname;
 		
 		$fitnessfile = $CFG->dataroot."/filedir/".$fitnesspath;
 	}
-	
+	/*
 	if($outdoorsresult = $DB->get_record_sql("SELECT contenthash FROM {files} WHERE ".$DB->sql_like("filename", ":img"), array("img" => "outdoors.%"))) {
 		$outdoorsname = $outdoorsresult->contenthash;
 		$path1 = substr($outdoorsname, 0, 2);
@@ -100,7 +106,10 @@ if(($email[1] == $CFG->deportes_emailextension) || is_siteadmin() || has_capabil
 	$latestoutdoors = $DB->get_record_sql("SELECT MAX(uploaddate) AS latest FROM {deportes_files} WHERE type = ?", array("1"));
 	$outdoorsfile = $DB->get_record("deportes_files", array("uploaddate" => $latestoutdoors->latest, "type" => "1"));
 	if($fitnessfile ){
-		$fitnessimg = html_writer::img("img/".$fitnessfile->name, "Fitness", array("style" => "width: 80%;"));
+		//$fitnessimg = html_writer::img("img/".$fitnessfile->name, "Fitness", array("style" => "width: 80%;"));
+		//$fitnessurl = deportes_setimageurl( $fitnessfile->id, $context->id );
+	//	var_dump($fitnessurl);
+		$fitnessimg = html_writer::empty_tag('img', array('width' => '100%', 'height' => '100%', 'src' => $fitnessurl));
 	}else{
 		$fitnessimg = html_writer::div("Please upload fitness schedule");
 	}

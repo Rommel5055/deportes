@@ -61,16 +61,19 @@ if ($action == "addfile"){
 	
 	if ($fromform = $addform->get_data()) {
 		$timecreated = time();
+
+		$path = $CFG -> dataroot. "/temp/local/paperattendance";
+		if (!file_exists($path . "/schedule/")) {
+			mkdir($path . "/schedule/", 0777, true);
+		}
 		
 		//Takes the data from the form
 		$newfile = new stdClass();
-		$path = $CFG->dirroot. "/local/deportes/img";
+
+		$fs = get_file_storage();
+		$files = $fs->get_area_files($context->id, 'local_deportes', 'file', '0', 'sortorder', false);
 		
-		$filename = $addform->get_new_filename("userfile");
-		$explodename = explode(".",$filename);
-		$countnamefile= count($explodename);
-		$extension = $explodename[$countnamefile-1];
-		
+		$extension = "jpg";
 		if ($fromform->type == 1){
 			$newfile->name = "outdoors".$timecreated.".".$extension;
 			$newfile->type = 1;
@@ -79,27 +82,18 @@ if ($action == "addfile"){
 			$newfile->name = "fitness".$timecreated.".".$extension;
 			$newfile->type = 2;
 		}
+		//foreach ($files as $file){
+			//$upload[] = deportes_uploadschedule($file, $path, $newfile, $context, $timecreated, $userid);
+		//}
 		
-		if($newfile->type == 1){
-			// Delete the previous outdoors file
-			foreach(glob("$path/outdoors*") as $file) {
-				unlink(realpath($file));
-			}
-		}
-		else if($newfile->type == 2){
-			// Delete the previous fitness file
-			foreach(glob("$path/fitness*") as $file) {
-				unlink(realpath($file));
-			}
-		}
+		$latest = $DB->get_record_sql("SELECT MAX(uploaddate) AS latest FROM {deportes_files}");
+		$lastid = $DB->get_record_sql("SELECT id FROM {deportes_files} WHERE uploaddate = ?", array('uploaddate' => $latest->latest));
 		
-		$file = $addform->save_file("userfile", $path."/".$newfile->name, true);
+		file_save_draft_area_files($fromform->userfile, $context->id, 'local_deportes', 'file',
+				$lastid->id , array('subdirs' => 0, 'maxbytes' => 5000000, 'maxfiles' => 1));
 		
-		$newfile->uploaddate = $timecreated;
-		$newfile->iduser = $userid;
-		$DB->insert_record('deportes_files', $newfile);
-			
-		redirect($urlschedule);
+		
+		//redirect($urlschedule);
 	}
 }
 

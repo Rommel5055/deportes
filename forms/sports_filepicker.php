@@ -34,8 +34,12 @@ class deportes_filepicker extends moodleform{
 				1 => "Outdoors",
 				2 => "Fitness"
 		);
-		$mform->addElement("filepicker", "userfile", get_string("selectfile", "local_deportes"), null, array("maxbytes" => 5000000, "accepted_types" => ["jpg", "png"]));
+		$mform->addElement("filepicker", "userfile", get_string("selectfile", "local_deportes"), null, 
+				array("maxbytes" => 5000000, "accepted_types" => ["*"]));
+		//$mform->addElement('filemanager', 'userfile', get_string("selectfile", "local_deportes"), null,
+			//		array("maxbytes" => 5000000, "accepted_types" => ["jpg"]));
 		$mform->setType("userfile", PARAM_FILE);
+		$path = $CFG -> dataroot. "/temp/local/deportes";
 		
 		/*$mform->get_new_filename("userfile");
 		$mform->setType("filename", PARAM_TEXT);
