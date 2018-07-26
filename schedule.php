@@ -63,7 +63,7 @@ if(($email[1] == $CFG->deportes_emailextension) || is_siteadmin() || has_capabil
 	echo $OUTPUT->tabtree(deportes_tabs(), "schedule");
 	
 	
-	if($fitnessresult = $DB->get_record_sql("SELECT pathnamehash, max(timecreated) FROM {files} WHERE filename LIKE ? and component = ?", array("%.pdf%", "local_deportes"))) {
+	if($fitnessresult = $DB->get_record_sql("SELECT pathnamehash, max(timecreated) FROM {files} WHERE filename LIKE ? and component = ?", array("%.pdf%", "local_deportes"))) { 
 		$fs = get_file_storage();
 		// Obtiene archivo gracias al hash.
 		$file = $fs->get_file_by_hash($fitnessresult->pathnamehash);
